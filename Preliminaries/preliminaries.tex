@@ -1,0 +1,35 @@
+\chapter{Preliminaries}
+
+\section{Words and Languages}
+An alphabet $\Sigma$ is a nonempty, finite set of symbols. A \emph{finite word} $u = a_1 \cdots a_n$ is a finite
+sequence of symbols $a_i \in\Sigma$ for $i \in \{1,\ldots,n\}$. The empty sequence is called the empty
+word and is denoted by $\varepsilon$. The length of a word $u$, denoted by $\abs{u}$, is the number of
+symbols in $u$. 
+For two words $u = a_1\cdots a_m$ and $v = b_1\cdots b_n$, the concatenation of $u$ and $v$ is the word
+$u \circ v = uv = a_1\cdots {a_m} {b_1} \cdots b_n$. 
+The set of all finite words over an alphabet $\Sigma$ is denoted by $\Sigma^*$. Let $w[i,j)$ refer to the subword of $w$ starting at position $i$ and ending at position $j-1$. Also, $w[i,i)=\varepsilon$ in this definition. Assume, here that the indexing of word starts from position $0$.\\
+
+An \emph{infinite word} $\alpha = a_1 a_2 \ldots$ is an infinite sequence  of symbols $a_i \in \Sigma$ for each $i \geq 1$. Given a word $v \in \Sigma^+$, the infinite repetition of $v$ is the infinite word $v^\omega = v v \ldots \in \Sigma^\omega$.  We say that a word $\alpha \in \Sigma^\omega$ is \emph{ultimately periodic} if it can be written as $uv^\omega$ with $u \in \Sigma^\ast$ and $v \in \Sigma^+$. Moreover, let $\alpha[i, j)=a_ia_{i+1}\cdots a_{j-1}$ be the finite infix of the infinite word $\alpha= a_0a_{1}\cdots \in \Sigma^\omega$. Similarly, let $\alpha[i,\infty)$ be the infinite suffix $a_i a_{i+1} \ldots \in \Sigma^\omega$.
+\\
+
+ A subset $L\subseteq \Sigma^\omega$ of infinite words is called a $\omega-$language. Concatenation can be also be extended to account for $\omega-$languages as well. But, $L\circ L^\prime$ is well-defined only when $L$ is a language of finite words and $L^\prime$ is a $\omega-$language 
+Also, the $\omega-$iteration of a language $L\subseteq\Sigma^{*}$ is the $\omega-$language $L^{\omega}=\{w_1w_2w_3\cdots \mid w_i\in L\backslash\{\epsilon\}\}$.
+
+
+\section{Deterministic finite automata}
+A \emph{Deterministic finite automaton} (DFA) is a tuple $(\Sigma, Q, q_0, \delta, F)$, where $\Sigma$ is a finite alphabet, $Q$ is is a finite set of states, $q_0 \in Q$ is the initial state, $\delta : Q\times \Sigma \rightarrow Q$ is the transition function,
+and $F \subseteq Q$ is the set of final (or accepting) states. We extend $\delta$ to a function $\delta : Q \times \Sigma^∗ \rightarrow Q$ by
+$\delta(q, \varepsilon) = q$ and $\delta(q, wa) = \delta(\delta(q, w), a) \text{ for all } a \in \Sigma^∗\text{ and }w \in \Sigma^∗$. The language accepted by $\mathcal{A}$ is ${w \in \Sigma^∗: \delta(q_0, w) \in F}$. Languages accepted by a DFA are called regular languages
+
+
+
+An $\omega$-regular expression $r_\omega$ is an expression with the following grammar:
+\begin{equation*}
+    r_\omega:=r^\omega \mid r\circ_\omega r_\omega \mid r_\omega+_\omega r_\omega
+\end{equation*}
+where, $r$ is a regular expression as described in Section~\ref{subsec:regex-def}. Let the set of $\omega-$regular expressions be denoted by $\mathcal{R}_{\Sigma}^{\omega}$.
+Again here, a $\omega-$regular expression can be represented in the form of a syntax tree or a syntax DAG, similar to ones for regular expressions. The only difference here is that the nodes of the syntax tree and the syntax DAG are labelled by elements from $\Lambda_\omega=\Lambda\cup\{\omega, +_\omega, \circ_\omega\}$.  The semantics of a $\omega-$regular expression is as usual defined as the language they defined, which is obtained in the following manner:
+\begin{equation*}
+    \sema{r^\omega}=\sema{r}^\omega;\ \sema{r\circ_\omega r_\omega}=\sema{r}\circ_\omega\sema{r_{\omega}};\ \sema{r_\omega+_{\omega}r_\omega^{\prime}}=\sema{r_\omega}\cup \sema{r_\omega^{\prime}}
+\end{equation*}
+It should be noted that $r^\omega$ is well defined only when $\epsilon\notin \sema{r}$, since otherwise, $\sema{r^\omega}$ might contain invalid infinite words.

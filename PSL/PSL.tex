@@ -1,0 +1,63 @@
+\chapter{Learning Program Specification Language}
+
+\section{PSL Formulas}
+ 
+PSL subsumes LTL and has an increased expressive power: While the expressive power of LTL is that of star-free $\omega$-regular expressions, the expressive power of PSL is the same as the full class of $\omega$-regular expressions. As PSL is a widely used standard it contains a large amount of derived operators; we concentrate here only on a subset of operators that suffice to obtain the expressive power of $\omega$-regular expressions. We call this subset corePSL. The syntax of  corePSL is given by the following grammar: 
+$$\varphi ::= p ~|~ \varphi_1 \vee \varphi_2 ~|~ \neg \varphi ~|~ \pslnext \varphi ~|~ \varphi_1 \psluntil \varphi_2 ~|~ r \triggers \varphi$$
+where $p\in \AP$, where Let $\AP$ be a set of atomic propositions and  $r$ is a regular expression over $2^\AP$. % that does not accept the empty word.
+The operator $\triggers$ is called \emph{suffix implication} or \emph{triggers}.
+\paragraph{Abbreviations}
+We mention only the main abbreviations related to the suffix implication operator.
+\[
+\begin{array}{rcl}
+r \xtriggers \varphi &::= & r \triggers (true \cdot \varphi) \\ 
+r \followedby \varphi &::= & \neg (r \triggers \neg \varphi) \\
+%r \xfollowedby \varphi ::= & \neg (r \xtriggers \neg \varphi) \\
+r &::= & r \followedby \mathit{true}
+\end{array}
+\]
+
+\subsubsection{Semantics}
+Given a word $w \in (2^{\AP})^\omega$ and a corePSL formula $\varphi$, we define the relation $w \modelspsl \varphi$ (read ``$w$ satisfies $\varphi$'') similarly to the way it is defined for LTL. 
+\begin{align*}
+&w \modelspsl p \text{ if }p \in w(0)\\
+&w \modelspsl \neg \varphi \text{ iff } w \modelspsl \varphi\\
+&w\modelspsl \varphi \vee \psi \text{ iff } w \modelspsl \varphi \text{ or } w \modelspsl \varphi\\
+&w \modelspsl \pslnext \varphi \text{ iff } w[1,\infty] \modelspsl \varphi\\
+&w \modelspsl \varphi \psluntil \psi \text{ iff }\exists i \geq 0 \text{ such that }w[i,\infty) \modelspsl \psi \text{ and }\forall 0 \leq k < i, w[k,\infty) \vDash \varphi\\
+&w  \modelspsl r\triggers \varphi \text{ iff } \forall j.\text{ if } w[0,j)\in\sema{r} \text{ then } w[j,\infty) \modelspsl \varphi
+\end{align*}
+
+The only operator is $w$ satisfies $r\triggers \varphi$ if \emph{for every} prefix $u$ of $w$ that matches the regular expression $r$,  the suffix of $w$ starting where $u$ ends (with one letter overlap) satisfies the formula $\varphi$.
+
+
+Folllowing~\cite{DBLP:journals/corr/abs-1806-03953} we  provide semantics for corePSL formulas also using a valuation function $V$.
+First we define a valuation function $U$ that maps pairs of finite words and regular expressions to Boolean values as follows:
+\begin{center}
+$U(u,r)=1$ iff $u\in\sema{r}$
+\end{center}
+  Then we define the valuation function $V$ as a map between pairs of infinite words and corePSL formulas to Boolean values and is inductively defined as follows:
+\begin{enumerate}
+	\item $V(w,p)=1$ iff $p\in w(0)$
+	\item $V(w,\neg \varphi) = 1 -V(w,\varphi)$
+	\item $V(w,\varphi \vee \psi)=\max\{V(w,\varphi), V(w,\psi)\}$
+	\item $V(w,\pslnext \varphi)=V(w[1,\infty), \varphi)$
+	\item $V(w,\varphi \psluntil \psi) = \max_{j\geq 0}\{V(w[j,\infty),\psi), \min_{0\leq i \leq j} V(w[i,\infty),\varphi \}\}$
+	\item $V(w,r\triggers \varphi) = \min_{i\geq 0}\{\max \{(1-V(w[1,i+1),r),\ V(w[j,\infty],\varphi)\}\}$ 
+\end{enumerate}
+We call $V(\varphi,w)$ the valuation of $\varphi$ on $w$ and say that $w$ satisfies $\varphi$ if $V(\varphi, w) = 1$.
+
+
+
+	Let $uv^\omega\in(2^\AP)^\omega$,  $k\in{\mathbb N}$ and $m=k\mod |v|$.
+	Then $uv^\omega[|u|+k,\infty)=uv^\omega[|u|+m,\infty)$.
+	Moreover, $V(uv^\omega[|u|+k,\infty),\varphi)=V(uv^\omega[|u|+m,\infty),\varphi)$ for every  PSL formula $\varphi$.
+
+
+\begin{definition}
+The matching relation $\vdash$ for finite words with regular expressions, could be extended to account for matching of ultimately periodic words with $\omega$-regular expressions as well. Here, $n$ refers to the size of the minimal DFA of $\sema{r}$ in all the cases.
+
+ \begin{align*}
+        uv^\omega[i,\infty)\vdash  r\triggers \varphi   &\iff  \forall j \in\mathbb{N},\ j<\abs{u}+n\abs{v},\ v^\omega[i,j)\vdash r  \text{ and } v^\omega[j,\infty) \vdash \varphi
+\end{align*}
+\end{definition} 
